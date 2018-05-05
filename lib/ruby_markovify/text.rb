@@ -64,10 +64,15 @@ module RubyMarkovify
       tries = options[:tries] || DEFAULT_TRIES
       mor = options[:max_overlap_ratio] || DEFAULT_MAX_OVERLAP_RATIO
       mot = options[:max_overlap_total] || DEFAULT_MAX_OVERLAP_TOTAL
+      test_output = options.fetch(:test_output, true)
 
       tries.times do
         words = @chain.walk(init_state)
-        return word_join(words) if test_sentence_output(words, mor, mot)
+        if test_output
+          return word_join(words) if test_sentence_output(words, mor, mot)
+        else
+          return word_join(words)
+        end
       end
       nil
     end
