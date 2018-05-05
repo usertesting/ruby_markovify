@@ -8,6 +8,7 @@ module RubyMarkovify
     def initialize(corpus, state_size, model = nil)
       @state_size = state_size
       @model = model || build(corpus, @state_size)
+      precompute_begin_state
     end
 
     def build(corpus, state_size)
@@ -31,9 +32,22 @@ module RubyMarkovify
       model
     end
 
-    def move(state)
-      choices, weights = @model[state].keys, @model[state].values
+    def precompute_begin_state
+      begin_state = [:begin] * @state_size
+      choices, weights = @model[begin_state].keys, @model[begin_state].values
       cumdist = RubyMarkovify.cumulative_sum(weights)
+      @begin_cumdist = cumdist
+      @begin_choices = choices
+    end
+
+    def move(state)
+      if state == [:begin] * @state_size
+        choices = @begin_choices
+        cumdist = @begin_cumdist
+      else
+        choices, weights = @model[state].keys, @model[state].values
+        cumdist = RubyMarkovify.cumulative_sum(weights)
+      end
       r = rand * cumdist[-1]
       choices[cumdist.index { |e| e >= r }]
     end
