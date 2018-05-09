@@ -4,10 +4,11 @@ require 'unidecode'
 
 module RubyMarkovify
   class Text
-    def initialize(input_text, state_size = nil, chain = nil)
+    def initialize(input_text, state_size = 2, chain = nil, retain_original: true)
       runs = generate_corpus(input_text)
-      @rejoined_text = sentence_join(runs.map { |e| word_join(e) })
-      state_size ||= 2
+      if retain_original
+        @rejoined_text = sentence_join(runs.map { |e| word_join(e) })
+      end
       @chain = chain || Chain.new(runs, state_size)
     end
 
@@ -68,7 +69,7 @@ module RubyMarkovify
 
       tries.times do
         words = @chain.walk(init_state)
-        if test_output
+        if test_output && defined? @rejoined_text
           return word_join(words) if test_sentence_output(words, mor, mot)
         else
           return word_join(words)
