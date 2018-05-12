@@ -31,6 +31,9 @@ corpus = File.read('corpus.txt')
 # Make a text from the corpus with state size 3
 text = RubyMarkovify::Text.new(corpus, 3)
 
+# Or to disable output originality checking (faster but less fun)
+# RubyMarkovify::Text.new(corpus, 3, retain_original: false)
+
 puts text.make_sentence  # Generates a random sentence
 puts text.make_sentence_with_start('I have')  # Generates a random sentence starting with 'I have'
 puts text.make_short_sentence(40)  # Generates a random sentence at most 40 characters long
